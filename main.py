@@ -1,15 +1,20 @@
 from file_manager import load_file
+from instructions import Instruction
+
 
 class Architecure:
     def __init__(self):
         # Initialize memory, stack, registers, and program counter
-        self.memory = {}
+        self.ptr_memory = {"A": "000000000", "B": "000000010"}
+        self.memory = 512 * ["0000000000"]  # 512 the maximum size of our memory, due to the 9-bit pointer
+        # TODO: STACK MAXIMUM SIZE 4096 BYTES
         self.stack = []
-        self.registers = {'t0': "", 't1': "", 't2': "", 't3': ""}
+        self.registers = {'t0': "000000010", 't1': "000000000", 't2': "111111111", 't3': "000000000"}
         self.program_counter = 0
+        self.instruction = Instruction(self)
 
     def __str__(self):
-        return f"Memory: {self.memory}\nStack: {self.stack}\nRegisters: {self.registers}\nProgram Counter: {self.program_counter}"
+        return f"Pointer Memory: {self.ptr_memory}\nMemory: {self.memory}\nStack: {self.stack}\nRegisters: {self.registers}\nProgram Counter: {self.program_counter}\n"
 
     def fetch_data(self, file_path):
         try:
@@ -18,8 +23,11 @@ class Architecure:
             raise ("Error: ", e)
 
         # Split the content into 32-bit chunks
-        chunks = [content[i:i+32] for i in range(0, len(content), 32)]
+        chunks = [content[i:i + 32] for i in range(0, len(content), 32)]
         sliced_instruction = [self.sliced_instruction(chunk) for chunk in chunks]
+        decoded_instruction = [self.decode_instruction(instruction) for instruction in sliced_instruction]
+        for instruction in decoded_instruction:
+            self.execute_instruction(instruction)
 
     def sliced_instruction(self, instruction):
         op_code = instruction[0:5]
@@ -40,18 +48,51 @@ class Architecure:
             'label': label if verification_label_bit == '1' else None
         }
 
-        print(sliced_instruction)
-
         return sliced_instruction
 
+    def decode_instruction(self, instruction):
+        try:
+            instruction['op_code'] = self.instruction.decode_op_code(instruction['op_code'])
+            instruction['param_type_1'] = self.instruction.decode_param_type(instruction['param_type_1'])
+            instruction['param_type_2'] = self.instruction.decode_param_type(instruction['param_type_2'])
+        except ValueError as e:
+            raise ("Error: ", e)
+        return instruction
 
-    def execute_instruction(self):
-        pass
+    def execute_instruction(self, instruction):
+        result = self.instruction.execute_instruction(instruction)
+        print(f"Result = {result}")
 
+    def add_to_memory(self, variable_name, value):
+        # Check if variable_name is already in memory
+        if variable_name in self.ptr_memory:
+            self.memory[int(self.ptr_memory[variable_name], 2)] = value
+            return True
 
+        liste_ptr_memory = list(self.ptr_memory.values())
+        liste_ptr_memory = [int(i, 2) for i in liste_ptr_memory]
+
+        for i in range(0, 512):
+            if i in liste_ptr_memory:
+                pass
+            else:
+                self.ptr_memory[variable_name] = bin(i)[2:].zfill(9)
+                self.memory[i] = value
+                return True  # Success
+
+        return False  # No space in memory found
+
+    def remove_from_memory(self, variable_name):
+        if variable_name in self.ptr_memory:
+            self.memory[int(self.ptr_memory[variable_name], 2)] = "0000000000"
+            del self.ptr_memory[variable_name]
+            return True  # Success
+        return False  # Not found
 
 
 architecture = Architecure()
-architecture.fetch_data("sample.txt")
-print(architecture.fetch_data("sample.txt"))
-
+architecture.add_to_memory("C", "1111111111")
+architecture.add_to_memory("D", "1111000111")
+architecture.remove_from_memory("C")
+# architecture.fetch_data("sample.txt")
+print(architecture)

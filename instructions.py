@@ -20,5 +20,160 @@ HLT - OP Code 10001
 
 POP - OP Code 11000
 NOT - OP Code 11001
+
+Type parameters:
+    00 - Register
+    01 - Constant
+    10 - Memory
+    11 - Label
 """
 
+class Instruction:
+    def __init__(self, architecture):
+        self.architecture = architecture
+        self.instructions = {
+            "00000": "LDA",
+            "00001": "STR",
+            "00010": "PUSH",
+            "00011": "AND",
+            "00100": "OR",
+            "00101": "ADD",
+            "00110": "SUB",
+            "00111": "DIV",
+            "01000": "MUL",
+            "01001": "MOD",
+            "01010": "INC",
+            "01011": "DEC",
+            "01100": "BEQ",
+            "01101": "BNE",
+            "01110": "BBG",
+            "01111": "BSM",
+            "10000": "JMP",
+            "10001": "HLT",
+            "11000": "POP",
+            "11001": "NOT"
+        }
+
+        self.instructions = {v: k for k, v in self.instructions.items()}
+
+    @staticmethod
+    def decode_op_code(string):
+        match string:
+            case "00000":
+                return "LDA"
+            case "00001":
+                return "STR"
+            case "00010":
+                return "PUSH"
+            case "00011":
+                return "AND"
+            case "00100":
+                return "OR"
+            case "00101":
+                return "ADD"
+            case "00110":
+                return "SUB"
+            case "00111":
+                return "DIV"
+            case "01000":
+                return "MUL"
+            case "01001":
+                return "MOD"
+            case "01010":
+                return "INC"
+            case "01011":
+                return "DEC"
+            case "01100":
+                return "BEQ"
+            case "01101":
+                return "BNE"
+            case "01110":
+                return "BBG"
+            case "01111":
+                return "BSM"
+            case "10000":
+                return "JMP"
+            case "10001":
+                return "HLT"
+            case "11000":
+                return "POP"
+            case "11001":
+                return "NOT"
+        raise ValueError("Invalid OP Code")
+
+    def decode_param_type(self, string):
+        match string:
+            case "00":
+                return "register"
+            case "01":
+                return "constant"
+            case "10":
+                return "memory"
+            case "11":
+                return "label"
+        raise ValueError("Invalid param type")
+
+    def execute_instruction(self, instruction):
+        if instruction['op_code'] in self.instructions:
+            return eval("self." + instruction['op_code'] + "(instruction)")
+        else:
+            raise ValueError("Instruction not found")
+
+
+    def LDA(self, instruction):
+        """
+        instruction.param_type_1: must be a register
+        instruction.operand_1: Destination register
+        instruction.param_type_2: Source register/constant/variable
+        """
+        # Select register from param_type_1
+        if instruction['param_type_1'] != "register" or instruction['param_type_2'] == "label":
+            raise ValueError("Invalid param type")
+
+        # Give adress of Destination register
+        register_destination = None
+        match instruction['operand_1']:
+            case "000000000": register_destination = "t0"
+            case "000000001": register_destination = "t1"
+            case "000000010": register_destination = "t2"
+            case "000000011": register_destination = "t3"
+        if register_destination is None:
+            raise ValueError("Invalid register")
+        else:
+            instruction['operand_1'] = register_destination
+
+        # Give adress of Source if register
+        register_destination = None
+        if instruction['operand_2'] and instruction['param_type_2'] == "register":
+            match instruction['operand_2']:
+                case "000000000": register_destination = "t0"
+                case "000000001": register_destination = "t1"
+                case "000000010": register_destination = "t2"
+                case "000000011": register_destination = "t3"
+            if register_destination is None:
+                raise ValueError("Invalid register")
+            else:
+                instruction['operand_2'] = register_destination
+
+        # Give adress of Source if memory
+        elif instruction['param_type_2'] == "memory":
+            try:
+                instruction['operand_2'] = list(self.architecture.memory)[int(instruction['operand_2'], 2) - 1]
+            except IndexError:
+                raise ValueError("Invalid memory position")
+
+        # Execute instruction
+        match instruction['param_type_2']:
+            case "register":
+                if instruction['operand_1'] in self.architecture.registers and instruction['operand_2'] in self.architecture.registers:
+                    self.architecture.registers[instruction['operand_1']] = self.architecture.registers[instruction['operand_2']]
+            case "constant":
+                if instruction['operand_1'] in self.architecture.registers:
+                    self.architecture.registers[instruction['operand_1']] = instruction['operand_2']
+            case "memory":
+                if instruction['operand_1'] in self.architecture.registers and instruction['operand_2'] in self.architecture.memory:
+                    self.architecture.registers[instruction['operand_1']] = self.architecture.memory[instruction['operand_2']]
+            case _:
+                return "ERROR INSTRUCTION"
+
+        return "LDA" + " " + instruction['operand_1'] + " " + instruction['operand_2']
