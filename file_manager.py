@@ -9,4 +9,3 @@ def load_file(file_path):
         raise ValueError(f'File {file_path} is not a valid file (Bits counting is not a multiple of 32: len = {len(content), len(content) % 32})')
 
     return content
-

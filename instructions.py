@@ -158,7 +158,11 @@ class Instruction:
         # Give adress of Source if memory
         elif instruction['param_type_2'] == "memory":
             try:
-                instruction['operand_2'] = list(self.architecture.memory)[int(instruction['operand_2'], 2) - 1]
+                # Get variable name from pointer memory
+                for key, value in self.architecture.ptr_memory.items():
+                    if value == instruction['operand_2']:
+                        instruction['operand_2'] = key
+                        break
             except IndexError:
                 raise ValueError("Invalid memory position")
 
@@ -171,8 +175,8 @@ class Instruction:
                 if instruction['operand_1'] in self.architecture.registers:
                     self.architecture.registers[instruction['operand_1']] = instruction['operand_2']
             case "memory":
-                if instruction['operand_1'] in self.architecture.registers and instruction['operand_2'] in self.architecture.memory:
-                    self.architecture.registers[instruction['operand_1']] = self.architecture.memory[instruction['operand_2']]
+                if instruction['operand_1'] in self.architecture.registers and instruction['operand_2'] in self.architecture.ptr_memory:
+                    self.architecture.registers[instruction['operand_1']] = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_2']], 2) - 1]
             case _:
                 return "ERROR INSTRUCTION"
 

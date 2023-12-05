@@ -10,6 +10,7 @@ class Architecure:
         # TODO: STACK MAXIMUM SIZE 4096 BYTES
         self.stack = []
         self.registers = {'t0': "000000010", 't1': "000000000", 't2': "111111111", 't3': "000000000"}
+        # TODO: PROGRAMM COUNTER
         self.program_counter = 0
         self.instruction = Instruction(self)
 
@@ -26,6 +27,7 @@ class Architecure:
         chunks = [content[i:i + 32] for i in range(0, len(content), 32)]
         sliced_instruction = [self.sliced_instruction(chunk) for chunk in chunks]
         decoded_instruction = [self.decode_instruction(instruction) for instruction in sliced_instruction]
+        # print(decoded_instruction)
         for instruction in decoded_instruction:
             self.execute_instruction(instruction)
 
@@ -93,6 +95,5 @@ class Architecure:
 architecture = Architecure()
 architecture.add_to_memory("C", "1111111111")
 architecture.add_to_memory("D", "1111000111")
-architecture.remove_from_memory("C")
-# architecture.fetch_data("sample.txt")
+architecture.fetch_data("sample.txt")
 print(architecture)
