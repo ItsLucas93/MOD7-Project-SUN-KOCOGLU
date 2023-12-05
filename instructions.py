@@ -1,0 +1,24 @@
+"""
+LDA - OP Code 00000
+STR - OP Code 00001
+PUSH - OP Code 00010
+AND - OP Code 00011
+OR - OP Code 00100
+ADD - OP Code 00101
+SUB - OP Code 00110
+DIV - OP Code 00111
+MUL - OP Code 01000
+MOD - OP Code 01001
+INC - OP Code 01010
+DEC - OP Code 01011
+BEQ - OP Code 01100
+BNE - OP Code 01101
+BBG - OP Code 01110
+BSM - OP Code 01111
+JMP - OP Code 10000
+HLT - OP Code 10001
+
+POP - OP Code 11000
+NOT - OP Code 11001
+"""
+
