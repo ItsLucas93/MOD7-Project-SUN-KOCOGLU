@@ -128,6 +128,47 @@ class Instruction:
         else:
             raise ValueError("Instruction not found")
 
+    def give_address_memory(self, instruction, param_number):
+        match param_number:
+            case 1:
+                index_param = 'param_type_1'
+                index_operand = 'operand_1'
+            case 2:
+                index_param = 'param_type_2'
+                index_operand = 'operand_2'
+            case _: raise ValueError("Invalid param number")
+
+        if instruction[index_param] == "memory":
+            try:
+                # Get variable name from pointer memory
+                for key, value in self.architecture.ptr_memory.items():
+                    if value == instruction[index_operand]:
+                        instruction[index_operand] = key
+                        return instruction
+            except IndexError:
+                raise ValueError("Invalid memory position")
+            raise ValueError("Invalid memory position: variable not found")
+        raise ValueError("Invalid param type")
+
+    def give_address_register(self, instruction, param_number):
+        match param_number:
+            case 1:
+                index_param = 'param_type_1'
+                index_operand = 'operand_1'
+            case 2:
+                index_param = 'param_type_2'
+                index_operand = 'operand_2'
+            case _: raise ValueError("Invalid param number")
+
+        if instruction[index_param] == "register":
+            match instruction[index_operand]:
+                case "000000000": instruction[index_operand] = "t0"
+                case "000000001": instruction[index_operand] = "t1"
+                case "000000010": instruction[index_operand] = "t2"
+                case "000000011": instruction[index_operand] = "t3"
+                case _: raise ValueError("Invalid register")
+            return instruction
+        raise ValueError("Invalid param type")
 
     def LDA(self, instruction):
         """
@@ -142,42 +183,16 @@ class Instruction:
         if instruction['param_type_1'] != "register" or instruction['param_type_2'] == "label":
             raise ValueError("Invalid param type")
 
-        # Give adress of Destination register
-        match instruction['operand_1']:
-            case "000000000": instruction['operand_1'] = "t0"
-            case "000000001": instruction['operand_1'] = "t1"
-            case "000000010": instruction['operand_1'] = "t2"
-            case "000000011": instruction['operand_1'] = "t3"
-            case _: raise ValueError("Invalid register")
+        # Give address of Destination register
+        instruction = self.give_address_register(instruction, 1)
 
         # Give address of Source if register
-        register_destination = None
         if instruction['operand_2'] and instruction['param_type_2'] == "register":
-            match instruction['operand_2']:
-                case "000000000": register_destination = "t0"
-                case "000000001": register_destination = "t1"
-                case "000000010": register_destination = "t2"
-                case "000000011": register_destination = "t3"
-                case _: raise ValueError("Invalid register")
-            if register_destination is None:
-                raise ValueError("Invalid register")
-            else:
-                instruction['operand_2'] = register_destination
+            instruction = self.give_address_register(instruction, 2)
 
         # Give adress of Source if memory
-        elif instruction['param_type_2'] == "memory":
-            try:
-                # Get variable name from pointer memory
-                boolean = False
-                for key, value in self.architecture.ptr_memory.items():
-                    if value == instruction['operand_2']:
-                        instruction['operand_2'] = key
-                        boolean = True
-                        break
-                if not boolean:
-                    raise ValueError("Invalid memory position: variable not found")
-            except IndexError:
-                raise ValueError("Invalid memory position")
+        if instruction['operand_2'] and instruction['param_type_2'] == "memory":
+            instruction = self.give_address_memory(instruction, 2)
 
         # Execute instruction
         match instruction['param_type_2']:
@@ -209,27 +224,11 @@ class Instruction:
             raise ValueError("Invalid param type")
 
         # Give address of Destination variable
-        try:
-            # Get variable name from pointer memory
-            boolean = False
-            for key, value in self.architecture.ptr_memory.items():
-                if value == instruction['operand_1']:
-                    instruction['operand_1'] = key
-                    boolean = True
-                    break
-            if not boolean:
-                raise ValueError("Invalid memory position: variable not found")
-        except IndexError:
-            raise ValueError("Invalid memory position")
+        instruction = self.give_address_memory(instruction, 1)
 
         # Give address of Source if register
         if instruction['operand_2'] and instruction['param_type_2'] == "register":
-            match instruction['operand_2']:
-                case "000000000": instruction['operand_2'] = "t0"
-                case "000000001": instruction['operand_2'] = "t1"
-                case "000000010": instruction['operand_2'] = "t2"
-                case "000000011": instruction['operand_2'] = "t3"
-                case _: raise ValueError("Invalid register")
+            instruction = self.give_address_register(instruction, 2)
 
         # Execute instruction
         match instruction['param_type_2']:
