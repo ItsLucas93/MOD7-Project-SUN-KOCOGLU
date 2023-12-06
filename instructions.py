@@ -168,10 +168,14 @@ class Instruction:
         elif instruction['param_type_2'] == "memory":
             try:
                 # Get variable name from pointer memory
+                boolean = False
                 for key, value in self.architecture.ptr_memory.items():
                     if value == instruction['operand_2']:
                         instruction['operand_2'] = key
+                        boolean = True
                         break
+                if not boolean:
+                    raise ValueError("Invalid memory position: variable not found")
             except IndexError:
                 raise ValueError("Invalid memory position")
 
@@ -207,10 +211,14 @@ class Instruction:
         # Give address of Destination variable
         try:
             # Get variable name from pointer memory
+            boolean = False
             for key, value in self.architecture.ptr_memory.items():
                 if value == instruction['operand_1']:
                     instruction['operand_1'] = key
+                    boolean = True
                     break
+            if not boolean:
+                raise ValueError("Invalid memory position: variable not found")
         except IndexError:
             raise ValueError("Invalid memory position")
 
