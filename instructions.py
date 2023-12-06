@@ -131,25 +131,24 @@ class Instruction:
 
     def LDA(self, instruction):
         """
+        Bits used: 11111 11 11 111111111 111111111 X XXXX
+        Op code: 00000
         instruction.param_type_1: must be a register
         instruction.operand_1: Destination register
         instruction.param_type_2: Source register/constant/variable
+        instruction.operand_2: Source register/constant/variable
         """
         # Select register from param_type_1
         if instruction['param_type_1'] != "register" or instruction['param_type_2'] == "label":
             raise ValueError("Invalid param type")
 
         # Give adress of Destination register
-        register_destination = None
         match instruction['operand_1']:
-            case "000000000": register_destination = "t0"
-            case "000000001": register_destination = "t1"
-            case "000000010": register_destination = "t2"
-            case "000000011": register_destination = "t3"
-        if register_destination is None:
-            raise ValueError("Invalid register")
-        else:
-            instruction['operand_1'] = register_destination
+            case "000000000": instruction['operand_1'] = "t0"
+            case "000000001": instruction['operand_1'] = "t1"
+            case "000000010": instruction['operand_1'] = "t2"
+            case "000000011": instruction['operand_1'] = "t3"
+            case _: raise ValueError("Invalid register")
 
         # Give address of Source if register
         register_destination = None
@@ -159,6 +158,7 @@ class Instruction:
                 case "000000001": register_destination = "t1"
                 case "000000010": register_destination = "t2"
                 case "000000011": register_destination = "t3"
+                case _: raise ValueError("Invalid register")
             if register_destination is None:
                 raise ValueError("Invalid register")
             else:
@@ -187,6 +187,51 @@ class Instruction:
                 if instruction['operand_1'] in self.architecture.registers and instruction['operand_2'] in self.architecture.ptr_memory:
                     self.architecture.registers[instruction['operand_1']] = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_2']], 2) - 1]
             case _:
-                return "ERROR INSTRUCTION"
+                return "ERROR UNRECOGNIZED INSTRUCTION"
 
         return "LDA" + " " + instruction['operand_1'] + " " + instruction['operand_2']
+
+    def STR(self, instruction):
+        """
+        Bits used: 11111 11 11 111111111 111111111 X XXXX
+        Op code: 00001
+        instruction.param_type_1: must be a variable
+        instruction.operand_1: Destination variable
+        instruction.param_type_2: Source register/constant
+        instruction.operand_2: Source register/constant
+        """
+        # Verify parameters
+        if instruction['param_type_1'] != "memory" or instruction['param_type_2'] not in ["register", "constant"]:
+            raise ValueError("Invalid param type")
+
+        # Give address of Destination variable
+        try:
+            # Get variable name from pointer memory
+            for key, value in self.architecture.ptr_memory.items():
+                if value == instruction['operand_1']:
+                    instruction['operand_1'] = key
+                    break
+        except IndexError:
+            raise ValueError("Invalid memory position")
+
+        # Give address of Source if register
+        if instruction['operand_2'] and instruction['param_type_2'] == "register":
+            match instruction['operand_2']:
+                case "000000000": instruction['operand_2'] = "t0"
+                case "000000001": instruction['operand_2'] = "t1"
+                case "000000010": instruction['operand_2'] = "t2"
+                case "000000011": instruction['operand_2'] = "t3"
+                case _: raise ValueError("Invalid register")
+
+        # Execute instruction
+        match instruction['param_type_2']:
+            case "register":
+                if instruction['operand_1'] in self.architecture.ptr_memory and instruction['operand_2'] in self.architecture.registers:
+                    self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 2) - 1] = self.architecture.registers[instruction['operand_2']]
+            case "constant":
+                if instruction['operand_1'] in self.architecture.ptr_memory:
+                    self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 2) - 1] = instruction['operand_2']
+            case _:
+                return "ERROR UNRECOGNIZED INSTRUCTION"
+
+        return "STR" + " " + instruction['operand_1'] + " " + instruction['operand_2']
