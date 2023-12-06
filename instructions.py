@@ -372,3 +372,45 @@ class Instruction:
 
         self.architecture.registers[instruction['operand_1']] = result
         return "NOT" + " " + instruction['operand_1']
+
+    def INC(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] != "register":
+            raise ValueError("Invalid param type")
+        # Give address of Destination register
+        instruction = self.give_address_register(instruction, 1)
+        # Execute instruction
+
+        operand_1 = self.architecture.registers[instruction['operand_1']]
+        result = ""
+        binary_value = int(operand_1, 2)
+        binary_value += 1
+        result = bin(binary_value)[2:].zfill(len(operand_1))
+        print(result)
+        if len(result) > 9:
+            raise OverflowError("Overflow")
+
+        self.architecture.registers[instruction['operand_1']] = result
+
+        return "INC" + " " + instruction['operand_1']
+
+
+    def DEC(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] != "register":
+            raise ValueError("Invalid param type")
+        # Give address of Destination register
+        instruction = self.give_address_register(instruction, 1)
+        # Execute instruction
+
+        operand_1 = self.architecture.registers[instruction['operand_1']]
+        result = ""
+        binary_value = int(operand_1, 2)
+        if binary_value == 0:
+            raise OverflowError("Underflow")
+        binary_value -= 1
+        result = bin(binary_value)[2:].zfill(len(operand_1))
+        print(result)
+        self.architecture.registers[instruction['operand_1']] = result
+
+        return "DEC" + " " + instruction['operand_1']
