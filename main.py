@@ -95,8 +95,8 @@ class Architecure:
 
 
 architecture = Architecure()
-architecture.add_to_memory("A", "0000000000")
-architecture.add_to_memory("B", "0000000001")
-architecture.add_to_memory("C", "0000000010")
-architecture.add_to_memory("D", "1111000111")
+architecture.add_to_memory("A", "000000000")
+architecture.add_to_memory("B", "000000001")
+architecture.add_to_memory("C", "000000010")
+architecture.add_to_memory("D", "111000111")
 architecture.fetch_data("sample.txt")
