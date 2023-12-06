@@ -293,4 +293,82 @@ class Instruction:
             raise ValueError("Invalid register")
         return "POP" + " " + instruction['operand_1']
 
+    def AND(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
+            raise ValueError("Invalid param type")
 
+        # Give address of Destination register
+        instruction = self.give_address_register(instruction, 1)
+        operand_1 = self.architecture.registers[instruction['operand_1']]
+
+        # Give address of Source if register
+        if instruction['operand_2'] and instruction['param_type_2'] == "register":
+            instruction = self.give_address_register(instruction, 2)
+            operand_2 = self.architecture.registers[instruction['operand_2']]
+
+        # Give address of Source if memory
+        elif instruction['operand_2'] and instruction['param_type_2'] == "memory":
+            instruction = self.give_address_memory(instruction, 2)
+            operand_2 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_2']], 2)]
+
+        elif instruction['operand_2'] and instruction['param_type_2'] == "constant":
+            operand_2 = instruction['operand_2']
+
+        # Execute instruction
+        result = ""
+
+        for i in range(0, len(operand_1)):
+            result += str(int(operand_1[i]) & int(operand_2[i]))
+
+        self.architecture.registers[instruction['operand_1']] = result
+        return "AND" + " " + instruction['operand_1'] + " " + instruction['operand_2']
+
+    def OR(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
+            raise ValueError("Invalid param type")
+
+        # Give address of Destination register
+        instruction = self.give_address_register(instruction, 1)
+        operand_1 = self.architecture.registers[instruction['operand_1']]
+
+        # Give address of Source if register
+        if instruction['operand_2'] and instruction['param_type_2'] == "register":
+            instruction = self.give_address_register(instruction, 2)
+            operand_2 = self.architecture.registers[instruction['operand_2']]
+
+        # Give address of Source if memory
+        elif instruction['operand_2'] and instruction['param_type_2'] == "memory":
+            instruction = self.give_address_memory(instruction, 2)
+            operand_2 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_2']], 2)]
+
+        elif instruction['operand_2'] and instruction['param_type_2'] == "constant":
+            operand_2 = instruction['operand_2']
+
+        # Execute instruction
+        result = ""
+
+        for i in range(0, len(operand_1)):
+            result += str(int(operand_1[i]) | int(operand_2[i]))
+
+        self.architecture.registers[instruction['operand_1']] = result
+        return "OR" + " " + instruction['operand_1'] + " " + instruction['operand_2']
+
+    def NOT(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] != "register":
+            raise ValueError("Invalid param type")
+
+        # Give address of Destination register
+        instruction = self.give_address_register(instruction, 1)
+
+        # Execute instruction
+        operand_1 = self.architecture.registers[instruction['operand_1']]
+        result = ""
+
+        for i in range(0, len(operand_1)):
+            result += str(int(not int(operand_1[i])))
+
+        self.architecture.registers[instruction['operand_1']] = result
+        return "NOT" + " " + instruction['operand_1']
