@@ -26,6 +26,15 @@ Type parameters:
     01 - Constant
     10 - Memory
     11 - Label
+
+Bits reading:
+5 - OP Code
+2 - Type parameter 1
+2 - Type parameter 2
+9 - Operand 1
+9 - Operand 2
+1 - Verification bit
+4 - Label
 """
 
 class Instruction:
@@ -142,7 +151,7 @@ class Instruction:
         else:
             instruction['operand_1'] = register_destination
 
-        # Give adress of Source if register
+        # Give address of Source if register
         register_destination = None
         if instruction['operand_2'] and instruction['param_type_2'] == "register":
             match instruction['operand_2']:

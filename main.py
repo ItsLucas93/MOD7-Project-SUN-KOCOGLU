@@ -7,6 +7,7 @@ class Architecure:
         # Initialize memory, stack, registers, and program counter
         self.ptr_memory = {"A": "000000000", "B": "000000010"}
         self.memory = 512 * ["0000000000"]  # 512 the maximum size of our memory, due to the 9-bit pointer
+        self.memory_code = []
         # TODO: STACK MAXIMUM SIZE 4096 BYTES
         self.stack = []
         self.registers = {'t0': "000000010", 't1': "000000000", 't2': "111111111", 't3': "000000000"}
@@ -15,7 +16,7 @@ class Architecure:
         self.instruction = Instruction(self)
 
     def __str__(self):
-        return f"Pointer Memory: {self.ptr_memory}\nMemory: {self.memory}\nStack: {self.stack}\nRegisters: {self.registers}\nProgram Counter: {self.program_counter}\n"
+        return f"Pointer Memory: {self.ptr_memory}\nMemory: {self.memory}\nMemory code: {self.memory_code}\nStack: {self.stack}\nRegisters: {self.registers}\nProgram Counter: {self.program_counter}\n"
 
     def fetch_data(self, file_path):
         try:
@@ -24,11 +25,11 @@ class Architecure:
             raise ("Error: ", e)
 
         # Split the content into 32-bit chunks
-        chunks = [content[i:i + 32] for i in range(0, len(content), 32)]
-        sliced_instruction = [self.sliced_instruction(chunk) for chunk in chunks]
-        decoded_instruction = [self.decode_instruction(instruction) for instruction in sliced_instruction]
+        self.memory_code = [content[i:i + 32] for i in range(0, len(content), 32)]
+        self.memory_code = [self.sliced_instruction(chunk) for chunk in self.memory_code]
+        self.memory_code = [self.decode_instruction(instruction) for instruction in self.memory_code]
         # print(decoded_instruction)
-        for instruction in decoded_instruction:
+        for instruction in self.memory_code:
             self.execute_instruction(instruction)
 
     def sliced_instruction(self, instruction):
