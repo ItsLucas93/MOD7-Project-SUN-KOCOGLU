@@ -242,3 +242,55 @@ class Instruction:
                 return "ERROR UNRECOGNIZED INSTRUCTION"
 
         return "STR" + " " + instruction['operand_1'] + " " + instruction['operand_2']
+
+    def PUSH(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] not in ["memory", "register", "constant"]:
+            raise ValueError("Invalid param type")
+
+        # Give address of Source if register
+        if instruction['operand_1'] and instruction['param_type_1'] == "register":
+            instruction = self.give_address_register(instruction, 1)
+
+        # Give address of Source if memory
+        if instruction['operand_1'] and instruction['param_type_1'] == "memory":
+            instruction = self.give_address_memory(instruction, 1)
+
+        # Pushing to the stack
+        if len(self.architecture.stack) > 4096:
+            raise OverflowError("Stack overflow")
+
+        # Execute instruction
+        match instruction['param_type_1']:
+            case "register":
+                if instruction['operand_1'] in self.architecture.registers:
+                    self.architecture.stack.append(self.architecture.registers[instruction['operand_1']])
+            case "constant":
+                self.architecture.stack.append(instruction['operand_1'])
+            case "memory":
+                if instruction['operand_1'] in self.architecture.ptr_memory:
+                    self.architecture.stack.append(self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 2)])
+            case _:
+                return "ERROR UNRECOGNIZED INSTRUCTION"
+        return "PUSH" + " " + instruction['operand_1']
+
+    def POP(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] != "register":
+            raise ValueError("Invalid param type")
+
+        # Give address of Destination register
+        instruction = self.give_address_register(instruction, 1)
+
+        # Poping from the stack
+        if len(self.architecture.stack) == 0:
+            raise OverflowError("Stack underflow")
+
+        # Execute instruction
+        if instruction['operand_1'] in self.architecture.registers:
+            self.architecture.registers[instruction['operand_1']] = self.architecture.stack.pop()
+        else:
+            raise ValueError("Invalid register")
+        return "POP" + " " + instruction['operand_1']
+
+

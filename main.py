@@ -65,6 +65,7 @@ class Architecure:
     def execute_instruction(self, instruction):
         result = self.instruction.execute_instruction(instruction)
         print(f"Result = {result}")
+        print(self)
 
     def add_to_memory(self, variable_name, value):
         # Check if variable_name is already in memory
@@ -98,7 +99,4 @@ architecture.add_to_memory("A", "0000000000")
 architecture.add_to_memory("B", "0000000001")
 architecture.add_to_memory("C", "0000000010")
 architecture.add_to_memory("D", "1111000111")
-print(architecture)
-print("\n\n")
 architecture.fetch_data("sample.txt")
-print(architecture)
