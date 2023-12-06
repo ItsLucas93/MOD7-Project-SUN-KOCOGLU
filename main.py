@@ -5,7 +5,7 @@ from instructions import Instruction
 class Architecure:
     def __init__(self):
         # Initialize memory, stack, registers, and program counter
-        self.ptr_memory = {"A": "000000000", "B": "000000010"}
+        self.ptr_memory = {}
         self.memory = 512 * ["0000000000"]  # 512 the maximum size of our memory, due to the 9-bit pointer
         self.memory_code = []
         # TODO: STACK MAXIMUM SIZE 4096 BYTES
@@ -94,7 +94,11 @@ class Architecure:
 
 
 architecture = Architecure()
-architecture.add_to_memory("C", "1111111111")
+architecture.add_to_memory("A", "0000000000")
+architecture.add_to_memory("B", "0000000001")
+architecture.add_to_memory("C", "0000000010")
 architecture.add_to_memory("D", "1111000111")
+print(architecture)
+print("\n\n")
 architecture.fetch_data("sample.txt")
 print(architecture)

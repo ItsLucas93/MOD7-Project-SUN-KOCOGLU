@@ -185,7 +185,7 @@ class Instruction:
                     self.architecture.registers[instruction['operand_1']] = instruction['operand_2']
             case "memory":
                 if instruction['operand_1'] in self.architecture.registers and instruction['operand_2'] in self.architecture.ptr_memory:
-                    self.architecture.registers[instruction['operand_1']] = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_2']], 2) - 1]
+                    self.architecture.registers[instruction['operand_1']] = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_2']], 2)]
             case _:
                 return "ERROR UNRECOGNIZED INSTRUCTION"
 
@@ -227,10 +227,10 @@ class Instruction:
         match instruction['param_type_2']:
             case "register":
                 if instruction['operand_1'] in self.architecture.ptr_memory and instruction['operand_2'] in self.architecture.registers:
-                    self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 2) - 1] = self.architecture.registers[instruction['operand_2']]
+                    self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 2)] = self.architecture.registers[instruction['operand_2']]
             case "constant":
                 if instruction['operand_1'] in self.architecture.ptr_memory:
-                    self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 2) - 1] = instruction['operand_2']
+                    self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 2)] = instruction['operand_2']
             case _:
                 return "ERROR UNRECOGNIZED INSTRUCTION"
 
