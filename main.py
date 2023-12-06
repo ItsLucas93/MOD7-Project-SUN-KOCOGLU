@@ -6,7 +6,7 @@ class Architecure:
     def __init__(self):
         # Initialize memory, stack, registers, and program counter
         self.ptr_memory = {}
-        self.memory = 512 * ["0000000000"]  # 512 the maximum size of our memory, due to the 9-bit pointer
+        self.memory = 512 * ["000000000"]  # 512 the maximum size of our memory, due to the 9-bit pointer
         self.memory_code = []
         # TODO: STACK MAXIMUM SIZE 4096 BYTES
         self.stack = []
