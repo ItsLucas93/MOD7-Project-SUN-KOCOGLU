@@ -587,3 +587,41 @@ class Instruction:
         self.architecture.registers[instruction['operand_1']] = result
 
         return "DEC" + " " + instruction['operand_1']
+
+    def BEQ(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] not in ["memory", "register", "constant"] or instruction ['param_type_2'] not in ["memory", "register", "constant"]:
+            raise ValueError("Invalid param type")
+
+        # Give address of Destination register
+        if instruction['operand_1'] and instruction['param_type_1'] == "register":
+            instruction = self.give_address_register(instruction, 1)
+            operand_1 = self.architecture.registers[instruction['operand_1']]
+
+        elif instruction['operand_1'] and instruction['param_type_1'] == "memory":
+            instruction = self.give_address_memory(instruction, 1)
+            operand_1 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 1)]
+
+        elif instruction['operand_1'] and instruction['param_type_1'] == "constant":
+            operand_1 = instruction['operand_1']
+
+        # Give address of Source if register
+        if instruction['operand_2'] and instruction['param_type_2'] == "register":
+            instruction = self.give_address_register(instruction, 2)
+            operand_2 = self.architecture.registers[instruction['operand_2']]
+
+        elif instruction['operand_2'] and instruction['param_type_2'] == "memory":
+            instruction = self.give_address_memory(instruction, 2)
+            operand_2 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_2']], 2)]
+
+        elif instruction['operand_2'] and instruction['param_type_2'] == "constant":
+            operand_2 = instruction['operand_2']
+
+        # Execute instruction
+        operand_1 = int(operand_1, 2)
+        operand_2 = int(operand_2, 2)
+        verif = bool(operand_2 == operand_1)
+        if verif:
+            pass
+
+        return "BEQ" + " " + instruction['operand_1'] + " " + instruction['operand_2']
