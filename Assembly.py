@@ -2,14 +2,14 @@ from file_manager import load_file
 from instructions import Instruction
 
 
-class Architecure:
+class Architecture:
     def __init__(self):
         # Initialize memory, stack, registers, and program counter
         self.ptr_memory = {}
         self.memory = 512 * ["000000000"]  # 512 the maximum size of our memory, due to the 9-bit pointer
         self.memory_code = []
         self.stack = []
-        self.registers = {'t0': "000000010", 't1': "000000000", 't2': "111111111", 't3': "000000000"}
+        self.registers = {'t0': "000000010", 't1': "000000000", 't2': "000000000", 't3': "000000000"}
         self.program_counter = 0
         self.instruction = Instruction(self)
 
@@ -55,15 +55,37 @@ class Architecure:
             raise ("Error: ", e)
         return instruction
 
-    def execute_program(self):
+    def execute_program(self, mode):
+        if mode == "full":
+            return self.execute_full_program()
+        elif mode == "step":
+            return self.execute_step_program()
+
+    def execute_step_program(self):
+        result = self.execute_instruction(self.memory_code[self.program_counter])
+        if result == "HLT":
+            return "END"
+
+    def clear_memory(self):
+        self.memory = 512 * ["000000000"]
+        self.memory_code = []
+        self.stack = []
+        self.registers = {'t0': "000000010", 't1': "000000000", 't2': "000000000", 't3': "000000000"}
+        self.program_counter = 0
+        self.instruction = Instruction(self)
+
+    def execute_full_program(self):
         while self.program_counter < len(self.memory_code):
-            self.execute_instruction(self.memory_code[self.program_counter])
+            result = self.execute_instruction(self.memory_code[self.program_counter])
+            if result == "HLT":
+                return "END"
 
     def execute_instruction(self, instruction):
         result = self.instruction.execute_instruction(instruction)
         print(f"Result = {result}")
         print(self)
         self.program_counter += 1
+        return result
 
     def add_to_memory(self, variable_name, value):
         # Check if variable_name is already in memory
@@ -90,12 +112,3 @@ class Architecure:
             del self.ptr_memory[variable_name]
             return True  # Success
         return False  # Not found
-
-
-architecture = Architecure()
-architecture.add_to_memory("A", "000000000")
-architecture.add_to_memory("B", "000000001")
-architecture.add_to_memory("C", "000000010")
-architecture.add_to_memory("D", "111000111")
-architecture.fetch_data("sample.txt")
-architecture.execute_program()
