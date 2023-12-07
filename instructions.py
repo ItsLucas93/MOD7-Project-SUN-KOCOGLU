@@ -620,7 +620,7 @@ class Instruction:
         # Execute instruction
         operand_1 = int(operand_1, 2)
         operand_2 = int(operand_2, 2)
-        result = bool(operand_2 == operand_1)
+        result = bool(operand_1 == operand_2)
         if result:
             self.architecture.program_counter = int(instruction['label'], 2)
 
@@ -658,7 +658,7 @@ class Instruction:
         # Execute instruction
         operand_1 = int(operand_1, 2)
         operand_2 = int(operand_2, 2)
-        result = bool(operand_2 != operand_1)
+        result = bool(operand_1 != operand_2)
         if result:
             self.architecture.program_counter = int(instruction['label'], 2)
 
@@ -696,7 +696,7 @@ class Instruction:
         # Execute instruction
         operand_1 = int(operand_1, 2)
         operand_2 = int(operand_2, 2)
-        result = bool(operand_2 > operand_1)
+        result = bool(operand_1 > operand_2)
         if result:
             self.architecture.program_counter = int(instruction['label'], 2)
 
@@ -734,7 +734,7 @@ class Instruction:
         # Execute instruction
         operand_1 = int(operand_1, 2)
         operand_2 = int(operand_2, 2)
-        result = bool(operand_2 < operand_1)
+        result = bool(operand_1 < operand_2)
         if result:
             self.architecture.program_counter = int(instruction['label'], 2)
 
