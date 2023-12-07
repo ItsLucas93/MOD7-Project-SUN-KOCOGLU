@@ -142,7 +142,7 @@ class Instruction:
             try:
                 # Get variable name from pointer memory
                 for key, value in self.architecture.ptr_memory.items():
-                    if value == instruction[index_operand]:
+                    if value == instruction[index_operand] or key == instruction[index_operand]:
                         instruction[index_operand] = key
                         return instruction
             except IndexError:
