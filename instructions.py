@@ -162,10 +162,10 @@ class Instruction:
 
         if instruction[index_param] == "register":
             match instruction[index_operand]:
-                case "000000000": instruction[index_operand] = "t0"
-                case "000000001": instruction[index_operand] = "t1"
-                case "000000010": instruction[index_operand] = "t2"
-                case "000000011": instruction[index_operand] = "t3"
+                case "000000000" | "t0": instruction[index_operand] = "t0"
+                case "000000001" | "t1": instruction[index_operand] = "t1"
+                case "000000010" | "t2": instruction[index_operand] = "t2"
+                case "000000011" | "t3": instruction[index_operand] = "t3"
                 case _: raise ValueError("Invalid register")
             return instruction
         raise ValueError("Invalid param type")
@@ -622,7 +622,7 @@ class Instruction:
         operand_2 = int(operand_2, 2)
         result = bool(operand_2 == operand_1)
         if result:
-            self.architecture.program_counter = int(self.architecture.ptr_memory[instruction['label']], 2)
+            self.architecture.program_counter = int(instruction['label'], 2)
 
         return "BEQ" + " " + instruction['operand_1'] + " " + instruction['operand_2'] + " " + instruction['label']
 
@@ -660,7 +660,7 @@ class Instruction:
         operand_2 = int(operand_2, 2)
         result = bool(operand_2 != operand_1)
         if result:
-            self.architecture.program_counter = int(self.architecture.ptr_memory[instruction['label']], 2)
+            self.architecture.program_counter = int(instruction['label'], 2)
 
         return "BNE" + " " + instruction['operand_1'] + " " + instruction['operand_2'] + " " + instruction['label']
 
@@ -698,7 +698,7 @@ class Instruction:
         operand_2 = int(operand_2, 2)
         result = bool(operand_2 > operand_1)
         if result:
-            self.architecture.program_counter = int(self.architecture.ptr_memory[instruction['label']], 2)
+            self.architecture.program_counter = int(instruction['label'], 2)
 
         return "BBG" + " " + instruction['operand_1'] + " " + instruction['operand_2'] + " " + instruction['label']
 
@@ -736,7 +736,7 @@ class Instruction:
         operand_2 = int(operand_2, 2)
         result = bool(operand_2 < operand_1)
         if result:
-            self.architecture.program_counter = int(self.architecture.ptr_memory[instruction['label']], 2)
+            self.architecture.program_counter = int(instruction['label'], 2)
 
         return "BSM" + " " + instruction['operand_1'] + " " + instruction['operand_2'] + " " + instruction['label']
 
@@ -746,7 +746,7 @@ class Instruction:
             raise ValueError("Invalid param type")
 
         # Execute instruction
-        self.architecture.program_counter = int(self.architecture.ptr_memory[instruction['label']], 2)
+        self.architecture.program_counter = int(instruction['label'], 2)
 
         return "JMP" + " " + instruction['label']
 
