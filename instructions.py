@@ -600,7 +600,7 @@ class Instruction:
 
         elif instruction['operand_1'] and instruction['param_type_1'] == "memory":
             instruction = self.give_address_memory(instruction, 1)
-            operand_1 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 1)]
+            operand_1 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 2)]
 
         elif instruction['operand_1'] and instruction['param_type_1'] == "constant":
             operand_1 = instruction['operand_1']
@@ -638,7 +638,7 @@ class Instruction:
 
         elif instruction['operand_1'] and instruction['param_type_1'] == "memory":
             instruction = self.give_address_memory(instruction, 1)
-            operand_1 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 1)]
+            operand_1 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 2)]
 
         elif instruction['operand_1'] and instruction['param_type_1'] == "constant":
             operand_1 = instruction['operand_1']
@@ -676,7 +676,7 @@ class Instruction:
 
         elif instruction['operand_1'] and instruction['param_type_1'] == "memory":
             instruction = self.give_address_memory(instruction, 1)
-            operand_1 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 1)]
+            operand_1 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 2)]
 
         elif instruction['operand_1'] and instruction['param_type_1'] == "constant":
             operand_1 = instruction['operand_1']
@@ -714,7 +714,7 @@ class Instruction:
 
         elif instruction['operand_1'] and instruction['param_type_1'] == "memory":
             instruction = self.give_address_memory(instruction, 1)
-            operand_1 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 1)]
+            operand_1 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_1']], 2)]
 
         elif instruction['operand_1'] and instruction['param_type_1'] == "constant":
             operand_1 = instruction['operand_1']
