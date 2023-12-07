@@ -26,8 +26,6 @@ class Architecure:
         self.memory_code = [content[i:i + 32] for i in range(0, len(content), 32)]
         self.memory_code = [self.sliced_instruction(chunk) for chunk in self.memory_code]
         self.memory_code = [self.decode_instruction(instruction) for instruction in self.memory_code]
-        for instruction in self.memory_code:
-            self.execute_instruction(instruction)
 
     def sliced_instruction(self, instruction):
         op_code = instruction[0:5]
@@ -56,6 +54,10 @@ class Architecure:
         except ValueError as e:
             raise ("Error: ", e)
         return instruction
+
+    def execute_program(self):
+        while self.program_counter < len(self.memory_code):
+            self.execute_instruction(self.memory_code[self.program_counter])
 
     def execute_instruction(self, instruction):
         result = self.instruction.execute_instruction(instruction)
@@ -96,3 +98,4 @@ architecture.add_to_memory("B", "000000001")
 architecture.add_to_memory("C", "000000010")
 architecture.add_to_memory("D", "111000111")
 architecture.fetch_data("sample.txt")
+architecture.execute_program()
