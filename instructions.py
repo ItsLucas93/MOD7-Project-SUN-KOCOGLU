@@ -373,6 +373,179 @@ class Instruction:
         self.architecture.registers[instruction['operand_1']] = result
         return "NOT" + " " + instruction['operand_1']
 
+    def ADD(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
+            raise ValueError("Invalid param type")
+
+        # Give address of Destination register
+        instruction = self.give_address_register(instruction, 1)
+        operand_1 = self.architecture.registers[instruction['operand_1']]
+
+        # Give address of Source if register
+        if instruction['operand_2'] and instruction['param_type_2'] == "register":
+            instruction = self.give_address_register(instruction, 2)
+            operand_2 = self.architecture.registers[instruction['operand_2']]
+
+        # Give address of Source if memory
+        elif instruction['operand_2'] and instruction['param_type_2'] == "memory":
+            instruction = self.give_address_memory(instruction, 2)
+            operand_2 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_2']], 2)]
+
+        elif instruction['operand_2'] and instruction['param_type_2'] == "constant":
+            operand_2 = instruction['operand_2']
+
+        # Execute instruction
+        operand_1 = int(operand_1, 2)
+        operand_2 = int(operand_2, 2)
+        result = operand_1 + operand_2
+        if result > 511:
+            raise OverflowError("Overflow")
+
+        result = bin(result)[2:].zfill(9)
+        self.architecture.registers[instruction['operand_1']] = result
+        return "ADD" + " " + instruction['operand_1'] + " " + instruction['operand_2']
+
+    def SUB(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
+            raise ValueError("Invalid param type")
+
+        # Give address of Destination register
+        instruction = self.give_address_register(instruction, 1)
+        operand_1 = self.architecture.registers[instruction['operand_1']]
+
+        # Give address of Source if register
+        if instruction['operand_2'] and instruction['param_type_2'] == "register":
+            instruction = self.give_address_register(instruction, 2)
+            operand_2 = self.architecture.registers[instruction['operand_2']]
+
+        # Give address of Source if memory
+        elif instruction['operand_2'] and instruction['param_type_2'] == "memory":
+            instruction = self.give_address_memory(instruction, 2)
+            operand_2 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_2']], 2)]
+
+        elif instruction['operand_2'] and instruction['param_type_2'] == "constant":
+            operand_2 = instruction['operand_2']
+
+        # Execute instruction
+        operand_1 = int(operand_1, 2)
+        operand_2 = int(operand_2, 2)
+        result = operand_2 - operand_1
+        if result < 0:
+            raise OverflowError("Underflow")
+
+        result = bin(result)[2:].zfill(9)
+        self.architecture.registers[instruction['operand_1']] = result
+        return "SUB" + " " + instruction['operand_1'] + " " + instruction['operand_2']
+
+    def DIV(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
+            raise ValueError("Invalid param type")
+
+        # Give address of Destination register
+        instruction = self.give_address_register(instruction, 1)
+        operand_1 = self.architecture.registers[instruction['operand_1']]
+
+        # Give address of Source if register
+        if instruction['operand_2'] and instruction['param_type_2'] == "register":
+            instruction = self.give_address_register(instruction, 2)
+            operand_2 = self.architecture.registers[instruction['operand_2']]
+
+        # Give address of Source if memory
+        elif instruction['operand_2'] and instruction['param_type_2'] == "memory":
+            instruction = self.give_address_memory(instruction, 2)
+            operand_2 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_2']], 2)]
+
+        elif instruction['operand_2'] and instruction['param_type_2'] == "constant":
+            operand_2 = instruction['operand_2']
+
+        # Execute instruction
+        operand_1 = int(operand_1, 2)
+        operand_2 = int(operand_2, 2)
+
+        if operand_1 == 0:
+            raise ZeroDivisionError("Division by zero")
+
+        result = operand_2 // operand_1
+        # Overflow and underflow not possible
+        # if result > 511:
+        #    raise OverflowError("Overflow")
+
+        print(operand_2, operand_1, result)
+        result = bin(result)[2:].zfill(9)
+        self.architecture.registers[instruction['operand_1']] = result
+        return "DIV" + " " + instruction['operand_1'] + " " + instruction['operand_2']
+
+    def MUL(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
+            raise ValueError("Invalid param type")
+
+        # Give address of Destination register
+        instruction = self.give_address_register(instruction, 1)
+        operand_1 = self.architecture.registers[instruction['operand_1']]
+
+        # Give address of Source if register
+        if instruction['operand_2'] and instruction['param_type_2'] == "register":
+            instruction = self.give_address_register(instruction, 2)
+            operand_2 = self.architecture.registers[instruction['operand_2']]
+
+        # Give address of Source if memory
+        elif instruction['operand_2'] and instruction['param_type_2'] == "memory":
+            instruction = self.give_address_memory(instruction, 2)
+            operand_2 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_2']], 2)]
+
+        elif instruction['operand_2'] and instruction['param_type_2'] == "constant":
+            operand_2 = instruction['operand_2']
+
+        # Execute instruction
+        operand_1 = int(operand_1, 2)
+        operand_2 = int(operand_2, 2)
+        result = operand_2 * operand_1
+        if result > 511:
+            raise OverflowError("Overflow")
+
+        result = bin(result)[2:].zfill(9)
+        self.architecture.registers[instruction['operand_1']] = result
+        return "MUL" + " " + instruction['operand_1'] + " " + instruction['operand_2']
+
+    def MOD(self, instruction):
+        # Verify parameters
+        if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
+            raise ValueError("Invalid param type")
+
+        # Give address of Destination register
+        instruction = self.give_address_register(instruction, 1)
+        operand_1 = self.architecture.registers[instruction['operand_1']]
+
+        # Give address of Source if register
+        if instruction['operand_2'] and instruction['param_type_2'] == "register":
+            instruction = self.give_address_register(instruction, 2)
+            operand_2 = self.architecture.registers[instruction['operand_2']]
+
+        # Give address of Source if memory
+        elif instruction['operand_2'] and instruction['param_type_2'] == "memory":
+            instruction = self.give_address_memory(instruction, 2)
+            operand_2 = self.architecture.memory[int(self.architecture.ptr_memory[instruction['operand_2']], 2)]
+
+        elif instruction['operand_2'] and instruction['param_type_2'] == "constant":
+            operand_2 = instruction['operand_2']
+
+        # Execute instruction
+        operand_1 = int(operand_1, 2)
+        operand_2 = int(operand_2, 2)
+        if operand_1 == 0:
+            raise ZeroDivisionError("Division by zero")
+        result = operand_2 % operand_1
+        if result > 511:
+            raise OverflowError("Overflow")
+
+        result = bin(result)[2:].zfill(9)
+        self.architecture.registers[instruction['operand_1']] = result
+        return "MOD" + " " + instruction['operand_1'] + " " + instruction['operand_2']
+
     def INC(self, instruction):
         # Verify parameters
         if instruction['param_type_1'] != "register":
