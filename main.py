@@ -8,10 +8,8 @@ class Architecure:
         self.ptr_memory = {}
         self.memory = 512 * ["000000000"]  # 512 the maximum size of our memory, due to the 9-bit pointer
         self.memory_code = []
-        # TODO: STACK MAXIMUM SIZE 4096 BYTES
         self.stack = []
         self.registers = {'t0': "000000010", 't1': "000000000", 't2': "111111111", 't3': "000000000"}
-        # TODO: PROGRAMM COUNTER
         self.program_counter = 0
         self.instruction = Instruction(self)
 
@@ -28,7 +26,6 @@ class Architecure:
         self.memory_code = [content[i:i + 32] for i in range(0, len(content), 32)]
         self.memory_code = [self.sliced_instruction(chunk) for chunk in self.memory_code]
         self.memory_code = [self.decode_instruction(instruction) for instruction in self.memory_code]
-        # print(decoded_instruction)
         for instruction in self.memory_code:
             self.execute_instruction(instruction)
 
@@ -38,8 +35,7 @@ class Architecure:
         param_type_2 = instruction[7:9]
         operand_1 = instruction[9:18]
         operand_2 = instruction[18:27]
-        verification_label_bit = instruction[27]
-        label = instruction[28:32]
+        label = instruction[27:32]
 
         sliced_instruction = {
             'op_code': op_code,
@@ -47,8 +43,7 @@ class Architecure:
             'param_type_2': param_type_2,
             'operand_1': operand_1,
             'operand_2': operand_2,
-            'verification_label_bit': verification_label_bit,
-            'label': label if verification_label_bit == '1' else None
+            'label': label
         }
 
         return sliced_instruction
@@ -66,6 +61,7 @@ class Architecure:
         result = self.instruction.execute_instruction(instruction)
         print(f"Result = {result}")
         print(self)
+        self.program_counter += 1
 
     def add_to_memory(self, variable_name, value):
         # Check if variable_name is already in memory
