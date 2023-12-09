@@ -63,8 +63,13 @@ class Architecture:
 
     def execute_step_program(self):
         result = self.execute_instruction(self.memory_code[self.program_counter])
+        print(result)
         if result == "HLT":
             return "END"
+        elif "VAD" in result:
+            return "VAD"
+        elif "VDE" in result:
+            return "VDE"
 
     def clear_memory(self):
         self.memory = 512 * ["000000000"]
@@ -79,6 +84,10 @@ class Architecture:
             result = self.execute_instruction(self.memory_code[self.program_counter])
             if result == "HLT":
                 return "END"
+            elif "VAD" in result:
+                return "VAD"
+            elif "VDE" in result:
+                return "VDE"
 
     def execute_instruction(self, instruction):
         result = self.instruction.execute_instruction(instruction)
@@ -108,7 +117,15 @@ class Architecture:
         return False  # No space in memory found
 
     def remove_from_memory(self, variable_name):
+        # Check if variable_name is already in memory
         if variable_name in self.ptr_memory:
+            # Check if other instruction uses the same variable name, if yes replace it with memory address
+            # TODO: Check if it works
+            for instruction in self.memory_code:
+                if instruction['param_type_1'] == 'memory' and instruction['operand_1'] == variable_name:
+                    instruction['operand_1'] = self.ptr_memory[variable_name]
+                if instruction['param_type_2'] == 'memory' and instruction['operand_2'] == variable_name:
+                    instruction['operand_2'] = self.ptr_memory[variable_name]
             self.memory[int(self.ptr_memory[variable_name], 2)] = "0000000000"
             del self.ptr_memory[variable_name]
             return True  # Success

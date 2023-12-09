@@ -222,7 +222,7 @@ class Instruction:
 
     def STR(self, instruction):
         """
-        Bits used: 11111 11 11 111111111 111111111 X XXXX
+        Bits used: 00001 10 11 111111111 111111111 X XXXX
         Op code: 00001
         instruction.param_type_1: must be a variable
         instruction.operand_1: Destination variable
@@ -782,9 +782,10 @@ class Instruction:
 
         # Valdiators
         # ASCII must not contain space and special characters
-        string = chr(int("0" + instruction['operand_1'], 2)) + chr(int("0" + instruction['operand_2'], 2)) + chr(int("0" + instruction['label'], 2))
-        regex = r'[^a-zA-Z]'
-        if re.search(regex, string):
+        string = instruction['operand_1'][2:] + instruction['operand_2'] + instruction['label']
+        string = chr(int("0b0" + string[0:7], 2)) + chr(int("0b0" + string[7:14], 2)) + chr(int("0b0" + string[14:21], 2))
+        regex = r'[a-zA-Z]*'
+        if not re.fullmatch(regex, string):
             raise ValueError("Invalid variable name")
 
         # Check if variable already exists
@@ -792,7 +793,7 @@ class Instruction:
             raise ValueError("Variable already exists")
 
         # Execute instruction
-        self.architecture.add_to_memory(string)
+        self.architecture.add_to_memory(string, None)
         return "VAD" + " " + string
 
     def VDE(self, instruction):
@@ -811,9 +812,10 @@ class Instruction:
 
         # Valdiators
         # ASCII must not contain space and special characters
-        string = chr(int("0" + instruction['operand_1'], 2)) + chr(int("0" + instruction['operand_2'], 2)) + chr(int("0" + instruction['label'], 2))
-        regex = r'[^a-zA-Z]'
-        if re.search(regex, string):
+        string = instruction['operand_1'][2:] + instruction['operand_2'] + instruction['label']
+        string = chr(int("0b0" + string[0:7], 2)) + chr(int("0b0" + string[7:14], 2)) + chr(int("0b0" + string[14:21], 2))
+        regex = r'[a-zA-Z]*'
+        if not re.fullmatch(regex, string):
             raise ValueError("Invalid variable name")
 
         # Check if variable already exists

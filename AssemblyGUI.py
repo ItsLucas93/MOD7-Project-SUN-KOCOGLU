@@ -7,10 +7,10 @@ class AssemblySimulatorUI:
         self.master = master
         self.master.title("Assembly Simulator")
         self.architecture = Architecture()
-        self.architecture.add_to_memory("A", "000000000")
-        self.architecture.add_to_memory("B", "000000001")
-        self.architecture.add_to_memory("C", "000000010")
-        self.architecture.add_to_memory("D", "111000111")
+        # self.architecture.add_to_memory("A", "000000000")
+        # self.architecture.add_to_memory("B", "000000001")
+        # self.architecture.add_to_memory("C", "000000010")
+        # self.architecture.add_to_memory("D", "111000111")
 
         # File Info Frame
         file_info_frame = tk.LabelFrame(master, text="File Info", padx=5, pady=5)
@@ -157,6 +157,18 @@ class AssemblySimulatorUI:
                 return instruction['op_code'] + " " + instruction['operand_1'] + "\n"
             case "NOT":
                 return instruction['op_code'] + " " + instruction['operand_1'] + "\n"
+            case "VAD":
+                string = instruction['operand_1'][2:] + instruction['operand_2'] + instruction['label']
+                string = chr(int("0b0" + string[0:7], 2)) + chr(int("0b0" + string[7:14], 2)) + chr(
+                    int("0b0" + string[14:21], 2))
+                return instruction['op_code'] + " " + string + "\n"
+            case "VDE":
+                string = instruction['operand_1'][2:] + instruction['operand_2'] + instruction['label']
+                string = chr(int("0b0" + string[0:7], 2)) + chr(int("0b0" + string[7:14], 2)) + chr(
+                    int("0b0" + string[14:21], 2))
+                return instruction['op_code'] + " " + string + "\n"
+            case _: raise ValueError("Invalid op code")
+
 
     def update_registers_display(self):
         # Clear the current content of the register display
@@ -213,6 +225,15 @@ class AssemblySimulatorUI:
         else:
             next_instruction = self.translate(self.architecture.memory_code[self.architecture.program_counter])
 
+        # Update code display if VAD or VDE
+        print(result)
+        if result == "VAD" or result == "VDE":
+            self.code_text.config(state=tk.NORMAL)
+            self.code_text.delete('1.0', tk.END)
+            for instruction in self.architecture.memory_code:
+                self.code_text.insert('999.0', self.translate(instruction))
+            self.code_text.config(state=tk.DISABLED)
+        # Update next instruction display
         self.next_instruction_entry.config(state=tk.NORMAL)  # Allow writing
         self.next_instruction_entry.delete(0, tk.END)
         self.next_instruction_entry.insert(0, next_instruction)
@@ -242,7 +263,8 @@ class AssemblySimulatorUI:
                         return instruction
             except IndexError:
                 raise ValueError("Invalid memory position")
-            raise ValueError("Invalid memory position: variable not found")
+            # instruction[index_operand] = "???"
+            return instruction
         raise ValueError("Invalid param type")
 
     def give_address_register(self, instruction, param_number):
