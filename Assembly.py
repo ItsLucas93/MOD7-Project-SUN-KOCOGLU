@@ -101,7 +101,8 @@ class Architecture:
                 pass
             else:
                 self.ptr_memory[variable_name] = bin(i)[2:].zfill(9)
-                self.memory[i] = value
+                if value:
+                    self.memory[i] = value
                 return True  # Success
 
         return False  # No space in memory found
