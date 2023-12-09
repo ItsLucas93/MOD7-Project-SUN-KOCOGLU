@@ -21,6 +21,10 @@ HLT - OP Code 10001
 POP - OP Code 11000
 NOT - OP Code 11001
 
+Two personalised OP codes:
+VAD - OP Code 11110 (Variable ADD)
+VDE - OP Code 11111 (Variable DELETE)
+
 Type parameters:
     00 - Register
     01 - Constant
@@ -33,9 +37,9 @@ Bits reading:
 2 - Type parameter 2
 9 - Operand 1
 9 - Operand 2
-1 - Verification bit
-4 - Label
+5 - Label
 """
+import re
 
 class Instruction:
     def __init__(self, architecture):
@@ -60,7 +64,9 @@ class Instruction:
             "10000": "JMP",
             "10001": "HLT",
             "11000": "POP",
-            "11001": "NOT"
+            "11001": "NOT",
+            "11110": "VAD",
+            "11111": "VDE"
         }
 
         self.instructions = {v: k for k, v in self.instructions.items()}
@@ -108,6 +114,10 @@ class Instruction:
                 return "POP"
             case "11001":
                 return "NOT"
+            case "11110":
+                return "VAD"
+            case "11111":
+                return "VDE"
         raise ValueError("Invalid OP Code")
 
     def decode_param_type(self, string):
@@ -212,7 +222,7 @@ class Instruction:
 
     def STR(self, instruction):
         """
-        Bits used: 11111 11 11 111111111 111111111 X XXXX
+        Bits used: 00001 10 11 111111111 111111111 X XXXX
         Op code: 00001
         instruction.param_type_1: must be a variable
         instruction.operand_1: Destination variable
@@ -755,3 +765,63 @@ class Instruction:
         self.architecture.program_counter = len(self.architecture.memory_code) - 1
 
         return "HLT"
+
+    def VAD(self, instruction):
+        """
+        Specific Design from here
+        Bits used: 11110 01 XX XX 111111111111111111111
+        Op code: 11110
+        instruction.param_type_1: must be a constant
+        instruction.operand_1 + instruction.operand_2 + instruction.label: variable name in ASCII binary
+
+        operand 1: ASCII value of the variable name
+        operand 2: value of the variable
+        """
+        if instruction['param_type_1'] != "constant" or instruction['param_type_2'] != "constant":
+            raise ValueError("Invalid param type")
+
+        # Valdiators
+        # ASCII must not contain space and special characters
+        string = instruction['operand_1'][2:] + instruction['operand_2'] + instruction['label']
+        string = chr(int("0b0" + string[0:7], 2)) + chr(int("0b0" + string[7:14], 2)) + chr(int("0b0" + string[14:21], 2))
+        regex = r'[a-zA-Z]*'
+        if not re.fullmatch(regex, string):
+            raise ValueError("Invalid variable name")
+
+        # Check if variable already exists
+        if string in self.architecture.ptr_memory.keys():
+            raise ValueError("Variable already exists")
+
+        # Execute instruction
+        self.architecture.add_to_memory(string, None)
+        return "VAD" + " " + string
+
+    def VDE(self, instruction):
+        """
+        Specific Design from here
+        Bits used: 11111 01 XX XX 111111111111111111111
+        Op code: 11111
+        instruction.param_type_1: must be a constant
+        instruction.operand_1 + instruction.operand_2 + instruction.label: variable name in ASCII binary
+
+        operand 1: ASCII value of the variable name
+        operand 2: value of the variable
+        """
+        if instruction['param_type_1'] != "constant" or instruction['param_type_2'] != "constant":
+            raise ValueError("Invalid param type")
+
+        # Valdiators
+        # ASCII must not contain space and special characters
+        string = instruction['operand_1'][2:] + instruction['operand_2'] + instruction['label']
+        string = chr(int("0b0" + string[0:7], 2)) + chr(int("0b0" + string[7:14], 2)) + chr(int("0b0" + string[14:21], 2))
+        regex = r'[a-zA-Z]*'
+        if not re.fullmatch(regex, string):
+            raise ValueError("Invalid variable name")
+
+        # Check if variable already exists
+        if string not in self.architecture.ptr_memory.keys():
+            raise ValueError("Variable does not exists")
+
+        # Execute instruction
+        self.architecture.remove_from_memory(string)
+        return "VDE" + " " + string
