@@ -4,13 +4,13 @@ from Assembly import Architecture
 
 class AssemblySimulatorUI:
     def __init__(self, master):
+        """
+        Initialize the UI
+        :param master: Tkinter master
+        """
         self.master = master
         self.master.title("Assembly Simulator")
         self.architecture = Architecture()
-        # self.architecture.add_to_memory("A", "000000000")
-        # self.architecture.add_to_memory("B", "000000001")
-        # self.architecture.add_to_memory("C", "000000010")
-        # self.architecture.add_to_memory("D", "111000111")
 
         # File Info Frame
         file_info_frame = tk.LabelFrame(master, text="File Info", padx=5, pady=5)
@@ -71,6 +71,10 @@ class AssemblySimulatorUI:
         self.step_button.config(state='disabled')
 
     def load_file(self):
+        """
+        Load a file from the user's computer (via filedialog)
+        Update all the displays
+        """
         self.architecture.clear_memory()
         file_path = filedialog.askopenfilename(filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
         if file_path:
@@ -110,6 +114,11 @@ class AssemblySimulatorUI:
                 messagebox.showerror("Error", f"Failed to load file: {e}")
 
     def translate(self, instruction):
+        """
+        Translate the instruction into a human-readable format
+        :param instruction: Instruction to translate
+        :return: String containing the translated instruction
+        """
         if instruction['param_type_1'] == "memory":
             instruction = self.give_address_memory(instruction, 1)
         elif instruction['param_type_1'] == "register":
@@ -175,6 +184,9 @@ class AssemblySimulatorUI:
 
 
     def update_registers_display(self):
+        """
+        Update the registers display
+        """
         # Clear the current content of the register display
         self.registers_text.config(state=tk.NORMAL)  # Enable text widget for editing
         self.registers_text.delete('1.0', tk.END)
@@ -187,6 +199,9 @@ class AssemblySimulatorUI:
         self.registers_text.config(state=tk.DISABLED)  # Disable text widget to prevent editing
 
     def update_memory_display(self):
+        """
+        Update the memory display
+        """
         self.variables_text.config(state=tk.NORMAL)  # Enable text widget for editing
         self.variables_text.delete('1.0', tk.END)
         for variable in self.architecture.ptr_memory:
@@ -194,6 +209,9 @@ class AssemblySimulatorUI:
         self.variables_text.config(state=tk.DISABLED)  # Disable text widget to prevent editing
 
     def update_stack_display(self):
+        """
+        Update the stack display
+        """
         self.stack_text.config(state=tk.NORMAL)  # Enable text widget for editing
         self.stack_text.delete('1.0', tk.END)
         # Insert the updated stack values in reversed order
@@ -202,12 +220,22 @@ class AssemblySimulatorUI:
         self.stack_text.config(state=tk.DISABLED)  # Disable text widget to prevent editing
 
     def clear_highlight(self):
+        """
+        Clear the highlight from the code display
+        """
         self.code_text.tag_remove('highlight', '1.0', tk.END)
 
     def apply_highlight(self, line_number):
+        """
+        Apply highlight to the code display
+        :param line_number: Line number to highlight (Provided by the PC)
+        """
         self.code_text.tag_add('highlight', f"{line_number}.0", f"{line_number}.end")
 
     def simulate(self):
+        """
+        Simulate the program with Simulation button
+        """
         self.clear_highlight()
         # Implement simulation functionality
         result = self.architecture.execute_program("full")
@@ -219,7 +247,11 @@ class AssemblySimulatorUI:
         self.update_stack_display()
         current_line = self.architecture.program_counter + 1
         self.apply_highlight(current_line)
+
     def step_simulation(self):
+        """
+        Simulate the program step-by-step with Step Simulation button
+        """
         self.clear_highlight()
         # Implement step simulation functionality
         result = self.architecture.execute_program("step")
@@ -250,6 +282,12 @@ class AssemblySimulatorUI:
         self.apply_highlight(current_line)
 
     def give_address_memory(self, instruction, param_number):
+        """
+        Give the address of the memory location
+        :param instruction: Instruction containing the memory location
+        :param param_number: Which param to give the address of
+        :return: Instruction with the address of the memory location
+        """
         match param_number:
             case 1:
                 index_param = 'param_type_1'
