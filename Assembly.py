@@ -9,7 +9,7 @@ class Architecture:
         self.memory = 512 * ["000000000"]  # 512 the maximum size of our memory, due to the 9-bit pointer
         self.memory_code = []
         self.stack = []
-        self.registers = {'t0': "000000010", 't1': "000000000", 't2': "000000000", 't3': "000000000"}
+        self.registers = {'t0': "000000000", 't1': "000000000", 't2': "000000000", 't3': "000000000"}
         self.program_counter = 0
         self.instruction = Instruction(self)
 
@@ -74,8 +74,9 @@ class Architecture:
     def clear_memory(self):
         self.memory = 512 * ["000000000"]
         self.memory_code = []
+        self.ptr_memory = {}
         self.stack = []
-        self.registers = {'t0': "000000010", 't1': "000000000", 't2': "000000000", 't3': "000000000"}
+        self.registers = {'t0': "000000000", 't1': "000000000", 't2': "000000000", 't3': "000000000"}
         self.program_counter = 0
         self.instruction = Instruction(self)
 
