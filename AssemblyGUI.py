@@ -43,7 +43,7 @@ class AssemblySimulatorUI:
         tk.Label(memory_info_frame, text="Stack").pack()
         self.stack_text = tk.Text(memory_info_frame, height=5)
         self.stack_text.pack(fill="x", expand=True)
-        for value in self.architecture.stack:
+        for value in reversed(self.architecture.stack):
             self.stack_text.insert(tk.END, f"{int(value, 2)}\n")
 
         # Registers Frame
@@ -101,6 +101,10 @@ class AssemblySimulatorUI:
                 self.next_instruction_entry.delete(0, tk.END)
                 self.next_instruction_entry.insert(0, next_instruction)
                 self.next_instruction_entry.config(state='readonly')  # Prevent further editing
+
+                self.update_registers_display()
+                self.update_stack_display()
+                self.update_memory_display()
 
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to load file: {e}")
@@ -192,7 +196,8 @@ class AssemblySimulatorUI:
     def update_stack_display(self):
         self.stack_text.config(state=tk.NORMAL)  # Enable text widget for editing
         self.stack_text.delete('1.0', tk.END)
-        for value in self.architecture.stack:
+        # Insert the updated stack values in reversed order
+        for value in reversed(self.architecture.stack):
             self.stack_text.insert(tk.END, f"{int(value, 2)}\n")
         self.stack_text.config(state=tk.DISABLED)  # Disable text widget to prevent editing
 
