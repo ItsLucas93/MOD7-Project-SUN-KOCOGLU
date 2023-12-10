@@ -182,7 +182,7 @@ class Instruction:
 
     def LDA(self, instruction):
         """
-        Bits used: 11111 11 11 111111111 111111111 X XXXX
+        Bits used: 11111 11 11 111111111 111111111 XXXXX
         Op code: 00000
         instruction.param_type_1: must be a register
         instruction.operand_1: Destination register
@@ -222,7 +222,7 @@ class Instruction:
 
     def STR(self, instruction):
         """
-        Bits used: 00001 10 11 111111111 111111111 X XXXX
+        Bits used: 00001 10 11 111111111 111111111 XXXXX
         Op code: 00001
         instruction.param_type_1: must be a variable
         instruction.operand_1: Destination variable
@@ -254,6 +254,13 @@ class Instruction:
         return "STR" + " " + instruction['operand_1'] + " " + instruction['operand_2']
 
     def PUSH(self, instruction):
+        """
+        Bits used: 00010 11 XX 111111111 XXXXXXX XXXXX
+        Op code: 00010
+        instruction.param_type_1: Must be a register/constant/variable
+        instruction.operand_1: Source register/constant/variable
+        Push the value of the register/constant/variable to the stack
+        """
         # Verify parameters
         if instruction['param_type_1'] not in ["memory", "register", "constant"]:
             raise ValueError("Invalid param type")
@@ -285,6 +292,13 @@ class Instruction:
         return "PUSH" + " " + instruction['operand_1']
 
     def POP(self, instruction):
+        """
+        Bits used: 11000 00 XX 0000011 XXXXXXX XXXXX
+        Op code: 11000
+        instruction.param_type_1: Must be a register
+        instruction.operand_1: Destination register
+        Pop the value of the stack to the register
+        """
         # Verify parameters
         if instruction['param_type_1'] != "register":
             raise ValueError("Invalid param type")
@@ -304,6 +318,15 @@ class Instruction:
         return "POP" + " " + instruction['operand_1']
 
     def AND(self, instruction):
+        """
+        Bits used: 00011 00 00 111111111 111111111 XXXXX
+        Op code: 00011
+        instruction.param_type_1: must be a register
+        instruction.operand_1: Destination register
+        instruction.param_type_2: Source register/constant/variable
+        instruction.operand_2: Source register/constant/variable
+        Perform a bitwise AND operation between the two operands and store the result in the destination register
+        """
         # Verify parameters
         if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
             raise ValueError("Invalid param type")
@@ -335,6 +358,15 @@ class Instruction:
         return "AND" + " " + instruction['operand_1'] + " " + instruction['operand_2']
 
     def OR(self, instruction):
+        """
+        Bits used: 00100 00 00 111111111 111111111 XXXXX
+        Op code: 00100
+        instruction.param_type_1: must be a register
+        instruction.operand_1: Destination register
+        instruction.param_type_2: Source register/constant/variable
+        instruction.operand_2: Source register/constant/variable
+        Perform a bitwise OR operation between the two operands and store the result in the destination register
+        """
         # Verify parameters
         if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
             raise ValueError("Invalid param type")
@@ -366,6 +398,13 @@ class Instruction:
         return "OR" + " " + instruction['operand_1'] + " " + instruction['operand_2']
 
     def NOT(self, instruction):
+        """
+        Bits used: 11001 00 XX 111111111 XXXXXXX XXXXX
+        Op code: 11001
+        instruction.param_type_1: must be a register
+        instruction.operand_1: Destination register
+        Perform a bitwise NOT operation on the refered register and store the result in the destination register
+        """
         # Verify parameters
         if instruction['param_type_1'] != "register":
             raise ValueError("Invalid param type")
@@ -384,6 +423,15 @@ class Instruction:
         return "NOT" + " " + instruction['operand_1']
 
     def ADD(self, instruction):
+        """
+        Bits used: 00101 00 00 111111111 111111111 XXXXX
+        Op code: 00101
+        instruction.param_type_1: must be a register
+        instruction.operand_1: Destination register
+        instruction.param_type_2: Source register/constant/variable
+        instruction.operand_2: Source register/constant/variable
+        Perform an addition between the two operands and store the result in the destination register
+        """
         # Verify parameters
         if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
             raise ValueError("Invalid param type")
@@ -417,6 +465,15 @@ class Instruction:
         return "ADD" + " " + instruction['operand_1'] + " " + instruction['operand_2']
 
     def SUB(self, instruction):
+        """
+        Bits used: 00110 00 00 111111111 111111111 XXXXX
+        Op code: 00110
+        instruction.param_type_1: must be a register
+        instruction.operand_1: Destination register
+        instruction.param_type_2: Source register/constant/variable
+        instruction.operand_2: Source register/constant/variable
+        Perform a subtraction between the two operands and store the result in the destination register
+        """
         # Verify parameters
         if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
             raise ValueError("Invalid param type")
@@ -450,6 +507,15 @@ class Instruction:
         return "SUB" + " " + instruction['operand_1'] + " " + instruction['operand_2']
 
     def DIV(self, instruction):
+        """
+        Bits used: 00111 00 00 111111111 111111111 XXXXX
+        Op code: 00111
+        instruction.param_type_1: must be a register
+        instruction.operand_1: Destination register
+        instruction.param_type_2: Source register/constant/variable
+        instruction.operand_2: Source register/constant/variable
+        Perform a division between the two operands and store the result in the destination register
+        """
         # Verify parameters
         if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
             raise ValueError("Invalid param type")
@@ -489,6 +555,15 @@ class Instruction:
         return "DIV" + " " + instruction['operand_1'] + " " + instruction['operand_2']
 
     def MUL(self, instruction):
+        """
+        Bits used: 01000 00 00 111111111 111111111 XXXXX
+        Op code: 01000
+        instruction.param_type_1: must be a register
+        instruction.operand_1: Destination register
+        instruction.param_type_2: Source register/constant/variable
+        instruction.operand_2: Source register/constant/variable
+        Perform a multiplication between the two operands and store the result in the destination register
+        """
         # Verify parameters
         if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
             raise ValueError("Invalid param type")
@@ -522,6 +597,15 @@ class Instruction:
         return "MUL" + " " + instruction['operand_1'] + " " + instruction['operand_2']
 
     def MOD(self, instruction):
+        """
+        Bits used: 01001 00 00 111111111 111111111 XXXXX
+        Op code: 01001
+        instruction.param_type_1: must be a register
+        instruction.operand_1: Destination register
+        instruction.param_type_2: Source register/constant/variable
+        instruction.operand_2: Source register/constant/variable
+        Perform a modulo between the two operands and store the result in the destination register
+        """
         # Verify parameters
         if instruction['param_type_1'] != "register" or instruction['param_type_2'] not in ["register", "constant", "memory"]:
             raise ValueError("Invalid param type")
@@ -557,6 +641,13 @@ class Instruction:
         return "MOD" + " " + instruction['operand_1'] + " " + instruction['operand_2']
 
     def INC(self, instruction):
+        """
+        Bits used: 01010 00 XX 111111111 XXXXXXXX XXXXX
+        Op code: 01010
+        instruction.param_type_1: must be a register
+        instruction.operand_1: Destination register
+        Increment the value of the register by 1
+        """
         # Verify parameters
         if instruction['param_type_1'] != "register":
             raise ValueError("Invalid param type")
@@ -579,6 +670,13 @@ class Instruction:
 
 
     def DEC(self, instruction):
+        """
+        Bits used: 01011 00 XX 111111111 XXXXXXXX XXXXX
+        Op code: 01011
+        instruction.param_type_1: must be a register
+        instruction.operand_1: Destination register
+        Decrement the value of the register by 1
+        """
         # Verify parameters
         if instruction['param_type_1'] != "register":
             raise ValueError("Invalid param type")
@@ -599,6 +697,16 @@ class Instruction:
         return "DEC" + " " + instruction['operand_1']
 
     def BEQ(self, instruction):
+        """
+        Bits used: 01100 00 00 111111111 111111111 00000
+        Op code: 01100
+        instruction.param_type_1: Can be a register/constant/variable
+        instruction.operand_1: Operand1 register/constant/variable
+        instruction.param_type_2: Can be a register/constant/variable
+        instruction.operand_2: Operand2 register/constant/variable
+        instruction.label: Line to jump to (PC)
+        Perform a comparison between the two operands and jump to the label if they are equal
+        """
         # Verify parameters
         if instruction['param_type_1'] not in ["memory", "register", "constant"] or instruction ['param_type_2'] not in ["memory", "register", "constant"]:
             raise ValueError("Invalid param type")
@@ -637,6 +745,16 @@ class Instruction:
         return "BEQ" + " " + instruction['operand_1'] + " " + instruction['operand_2'] + " " + instruction['label']
 
     def BNE(self, instruction):
+        """
+        Bits used: 01101 00 00 111111111 111111111 00000
+        Op code: 01101
+        instruction.param_type_1: Can be a register/constant/variable
+        instruction.operand_1: Operand1 register/constant/variable
+        instruction.param_type_2: Can be a register/constant/variable
+        instruction.operand_2: Operand2 register/constant/variable
+        instruction.label: Line to jump to (PC)
+        Perform a comparison between the two operands and jump to the label if they are not equal
+        """
         # Verify parameters
         if instruction['param_type_1'] not in ["memory", "register", "constant"] or instruction ['param_type_2'] not in ["memory", "register", "constant"]:
             raise ValueError("Invalid param type")
@@ -675,6 +793,16 @@ class Instruction:
         return "BNE" + " " + instruction['operand_1'] + " " + instruction['operand_2'] + " " + instruction['label']
 
     def BBG(self, instruction):
+        """
+        Bits used: 01110 00 00 111111111 111111111 00000
+        Op code: 01110
+        instruction.param_type_1: Can be a register/constant/variable
+        instruction.operand_1: Operand1 register/constant/variable
+        instruction.param_type_2: Can be a register/constant/variable
+        instruction.operand_2: Operand2 register/constant/variable
+        instruction.label: Line to jump to (PC)
+        Perform a comparison between the two operands and jump to the label if the first operand is bigger than the second
+        """
         # Verify parameters
         if instruction['param_type_1'] not in ["memory", "register", "constant"] or instruction ['param_type_2'] not in ["memory", "register", "constant"]:
             raise ValueError("Invalid param type")
@@ -713,6 +841,16 @@ class Instruction:
         return "BBG" + " " + instruction['operand_1'] + " " + instruction['operand_2'] + " " + instruction['label']
 
     def BSM(self, instruction):
+        """
+        Bits used: 01111 00 00 111111111 111111111 00000
+        Op code: 01111
+        instruction.param_type_1: Can be a register/constant/variable
+        instruction.operand_1: Operand1 register/constant/variable
+        instruction.param_type_2: Can be a register/constant/variable
+        instruction.operand_2: Operand2 register/constant/variable
+        instruction.label: Line to jump to (PC)
+        Perform a comparison between the two operands and jump to the label if the first operand is smaller than the second
+        """
         # Verify parameters
         if instruction['param_type_1'] not in ["memory", "register", "constant"] or instruction ['param_type_2'] not in ["memory", "register", "constant"]:
             raise ValueError("Invalid param type")
@@ -751,6 +889,13 @@ class Instruction:
         return "BSM" + " " + instruction['operand_1'] + " " + instruction['operand_2'] + " " + instruction['label']
 
     def JMP(self, instruction):
+        """
+        Bits used: 10000 11 XX XXXXXXXX XXXXXXX 00000
+        Op code: 10000
+        instruction.param_type_1: must be a label
+        instruction.label: Line to jump to (PC)
+        Jump to the line (Affect PC)
+        """
         # Verify parameters
         if instruction['param_type_1'] != "label":
             raise ValueError("Invalid param type")
@@ -761,6 +906,11 @@ class Instruction:
         return "JMP" + " " + instruction['label']
 
     def HLT(self, instruction):
+        """
+        Bits used: 10001 XX XX XXXXXXXX XXXXXXXX XXXXX
+        Op code: 10001
+        Declare the end of the program
+        """
         # Execute instruction
         self.architecture.program_counter = len(self.architecture.memory_code) - 1
 
